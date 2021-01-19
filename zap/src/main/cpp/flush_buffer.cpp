@@ -1,0 +1,70 @@
+//
+// Created by #Suyghur, on 2021/1/15.
+//
+
+#include "include/flush_buffer.h"
+
+
+FlushBuffer::FlushBuffer(FILE *log_file, size_t size) : capacity(size), log_file(log_file) {}
+
+FlushBuffer::~FlushBuffer() {
+    if (data_ptr != nullptr) {
+        delete[] data_ptr;
+    }
+    if (release != nullptr) {
+        delete release;
+    }
+}
+
+size_t FlushBuffer::length() {
+    if (data_ptr != nullptr && write_ptr != nullptr) {
+        return write_ptr - data_ptr;
+    }
+    return 0;
+}
+
+void *FlushBuffer::ptr() {
+    return data_ptr;
+}
+
+size_t FlushBuffer::emptySize() {
+    return capacity - length();
+}
+
+void FlushBuffer::write(void *data, size_t len) {
+    if (data_ptr == nullptr) {
+        capacity = (size_t) fmax(capacity, len);
+        data_ptr = new char[capacity]{0};
+        write_ptr = data_ptr;
+    }
+
+    size_t _empty_size = emptySize();
+    if (len < _empty_size) {
+        memcpy(write_ptr, data, len);
+        write_ptr += len;
+    } else {
+        size_t _now_len = length();
+        size_t _new_capacity = _now_len + len;
+        char *_data_tmp = new char[_new_capacity]{0};
+        memcpy(_data_tmp, data_ptr, _now_len);
+        memcpy(_data_tmp + _now_len, data, len);
+        char *_old_data = data_ptr;
+        write_ptr = data_ptr + _new_capacity;
+        delete[] _old_data;
+    }
+}
+
+void FlushBuffer::reset() {
+    if (data_ptr != nullptr) {
+        memset(data_ptr, 0, capacity);
+        write_ptr = data_ptr;
+    }
+}
+
+FILE *FlushBuffer::logFile() {
+    return log_file;
+}
+
+void FlushBuffer::releaseThis(void *pVoid) {
+    this->release = pVoid;
+}
