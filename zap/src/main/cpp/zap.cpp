@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sstream>
+#include <logger.h>
 
 #include "include/log_buffer.h"
 
@@ -28,7 +29,7 @@ initNative(JNIEnv *env, jclass clazz, jstring buffer_path,
            jint capacity, jstring log_path, jboolean compress) {
     const char *_buffer_path = env->GetStringUTFChars(buffer_path, JNI_FALSE);
     const char *_log_path = env->GetStringUTFChars(log_path, JNI_FALSE);
-    size_t _buffer_size = static_cast<size_t>(capacity);
+    auto _buffer_size = static_cast<size_t>(capacity);
     int _buffer_fd = open(_buffer_path, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     //buffer 的第一个字节会用于存储日志路径名称长度，后面紧跟日志路径，之后才是日志信息
     if (file_flush == nullptr) {
@@ -43,7 +44,7 @@ initNative(JNIEnv *env, jclass clazz, jstring buffer_path,
         _buffer_ptr = new char[_buffer_size];
         _map_buffer = false;
     }
-    LogBuffer *_log_buffer = new LogBuffer(_buffer_ptr, _buffer_size);
+    auto *_log_buffer = new LogBuffer(_buffer_ptr, _buffer_size);
     _log_buffer->setAsyncFileFlush(file_flush);
     //讲buffer内的数据清0，并写入日志文件路径
     _log_buffer->initData((char *) _log_path, strlen(_log_path), compress);
@@ -71,15 +72,15 @@ static char *openMMap(int buffer_fd, size_t buffer_size) {
 }
 
 static void writeDirtyLog2File(int buffer_fd) {
-    struct stat _file_info;
+    struct stat _file_info{};
     if (fstat(buffer_fd, &_file_info) >= 0) {
-        size_t _buffered_size = static_cast<size_t>(_file_info.st_size);
+        auto _buffered_size = static_cast<size_t>(_file_info.st_size);
         //buffer_size必须是大于头文件长度的，否则会导致下标溢出
         if (_buffered_size > LogBufferHeader::calculateHeaderLen(0)) {
             char *_buffer_ptr_map = (char *) mmap(0, _buffered_size, PROT_WRITE | PROT_READ,
                                                   MAP_SHARED, buffer_fd, 0);
             if (_buffer_ptr_map != MAP_FAILED) {
-                LogBuffer *_tmp = new LogBuffer(_buffer_ptr_map, _buffered_size);
+                auto *_tmp = new LogBuffer(_buffer_ptr_map, _buffered_size);
                 size_t _data_size = _tmp->length();
                 if (_data_size > 0) {
                     _tmp->asyncFlush(file_flush, _tmp);
@@ -93,8 +94,9 @@ static void writeDirtyLog2File(int buffer_fd) {
 
 static void writeNative(JNIEnv *env, jobject instance, jlong ptr, jstring log) {
     const char *_log = env->GetStringUTFChars(log, JNI_FALSE);
+    Logger::logd(_log);
     jsize _log_len = env->GetStringUTFLength(log);
-    LogBuffer *_log_buffer = reinterpret_cast<LogBuffer *>(ptr);
+    auto *_log_buffer = reinterpret_cast<LogBuffer *>(ptr);
     //缓存写不下时异步刷新
     if (_log_len >= _log_buffer->emptySize()) {
         _log_buffer->asyncFlush(file_flush);
@@ -104,23 +106,21 @@ static void writeNative(JNIEnv *env, jobject instance, jlong ptr, jstring log) {
 }
 
 static void releaseNative(JNIEnv *env, jobject instance, jlong ptr) {
-    LogBuffer *_log_buffer = reinterpret_cast<LogBuffer *>(ptr);
+    auto *_log_buffer = reinterpret_cast<LogBuffer *>(ptr);
     _log_buffer->asyncFlush(file_flush, _log_buffer);
-    if (file_flush != nullptr) {
-        delete file_flush;
-    }
+    delete file_flush;
     file_flush = nullptr;
 }
 
 static void changeLogPathNative(JNIEnv *env, jobject instance, jlong ptr, jstring log_file_path) {
     const char *_log_path = env->GetStringUTFChars(log_file_path, JNI_FALSE);
-    LogBuffer *_log_buffer = reinterpret_cast<LogBuffer *>(ptr);
+    auto *_log_buffer = reinterpret_cast<LogBuffer *>(ptr);
     _log_buffer->changeLogPath(const_cast<char *>(_log_path));
     env->ReleaseStringUTFChars(log_file_path, _log_path);
 }
 
 static void flushAsyncNative(JNIEnv *env, jobject instance, jlong ptr) {
-    LogBuffer *_log_buffer = reinterpret_cast<LogBuffer *>(ptr);
+    auto *_log_buffer = reinterpret_cast<LogBuffer *>(ptr);
     _log_buffer->asyncFlush(file_flush);
 }
 

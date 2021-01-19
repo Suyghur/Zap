@@ -1,6 +1,7 @@
 package com.flyfun.zap
 
 import android.app.Application
+import cn.flyfun.zap.Zap
 
 /**
  * @author #Suyghur,
@@ -9,6 +10,6 @@ import android.app.Application
 class ZapApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        ZapInit.install(this)
+        Zap.default(this)
     }
 }

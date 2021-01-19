@@ -33,7 +33,7 @@ class DateFileFormatter @JvmOverloads constructor(pattern: String? = "yyyy:MM:dd
         if (mStringBuffer.length > mTimeLength) {
             mStringBuffer.delete(mTimeLength, mStringBuffer.length)
         }
-        return mStringBuffer.append(Level.getShortLevelName(level)).append("/").append(tag).append(" : ").append(msg).append('\n').toString()
+        return mStringBuffer.append("[${Level.getShortLevelName(level)}]").append(tag).append(": ").append(msg).append('\n').toString()
     }
 
     @Synchronized

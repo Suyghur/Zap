@@ -12,14 +12,14 @@ LogBufferHeader::LogBufferHeader(void *data, size_t size) : data_ptr((char *) da
 
 }
 
-LogBufferHeader::~LogBufferHeader() {}
+LogBufferHeader::~LogBufferHeader() = default;
 
 void *LogBufferHeader::originPtr() {
     return data_ptr;
 }
 
 Header *LogBufferHeader::getHeader() {
-    Header *_header = new Header();
+    auto *_header = new Header();
     if (isAvailable()) {
         _header->magic = kMagicHeader;
         size_t _log_len = 0;

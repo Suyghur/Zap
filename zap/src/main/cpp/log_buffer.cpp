@@ -42,7 +42,7 @@ size_t LogBuffer::append(const char *log, size_t len) {
     }
 
     size_t _free_size = emptySize();
-    size_t _write_size = 0;
+    size_t _write_size;
     if (is_compress) {
         zStream.avail_in = (uInt) len;
         zStream.next_in = (Bytef *) log;
@@ -64,23 +64,21 @@ size_t LogBuffer::append(const char *log, size_t len) {
     return _write_size;
 }
 
-void LogBuffer::setAsyncFileFlush(AsyncFileFlush *file_flush) {
-    this->file_flush = file_flush;
+void LogBuffer::setAsyncFileFlush(AsyncFileFlush *flush) {
+    this->file_flush = flush;
 }
 
 void LogBuffer::asyncFlush() {
     asyncFlush(file_flush);
 }
 
-void LogBuffer::asyncFlush(AsyncFileFlush *file_flush) {
-    asyncFlush(file_flush, nullptr);
+void LogBuffer::asyncFlush(AsyncFileFlush *flush) {
+    asyncFlush(flush, nullptr);
 }
 
-void LogBuffer::asyncFlush(AsyncFileFlush *file_flush, LogBuffer *release_this) {
-    if (file_flush == nullptr) {
-        if (release_this != nullptr) {
-            delete release_this;
-        }
+void LogBuffer::asyncFlush(AsyncFileFlush *flush, LogBuffer *release_this) {
+    if (flush == nullptr) {
+        delete release_this;
         return;
     }
     std::lock_guard<std::recursive_mutex> _lck_clear(log_mtx);
@@ -88,11 +86,11 @@ void LogBuffer::asyncFlush(AsyncFileFlush *file_flush, LogBuffer *release_this) 
         if (is_compress && Z_NULL != zStream.state) {
             deflateEnd(&zStream);
         }
-        FlushBuffer *_flush_buffer = new FlushBuffer(log_file);
+        auto *_flush_buffer = new FlushBuffer(log_file);
         _flush_buffer->write(data_ptr, length());
         _flush_buffer->releaseThis(release_this);
         clear();
-        file_flush->asyncFlush(_flush_buffer);
+        flush->asyncFlush(_flush_buffer);
     } else {
         delete release_this;
     }

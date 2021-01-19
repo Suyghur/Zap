@@ -40,13 +40,13 @@ public:
 
     char *getLogPath();
 
-    void setAsyncFileFlush(AsyncFileFlush *file_flush);
+    void setAsyncFileFlush(AsyncFileFlush *flush);
 
     void asyncFlush();
 
-    void asyncFlush(AsyncFileFlush *file_flush);
+    void asyncFlush(AsyncFileFlush *flush);
 
-    void asyncFlush(AsyncFileFlush *file_flush, LogBuffer *release_this);
+    void asyncFlush(AsyncFileFlush *flush, LogBuffer *release_this);
 
     void changeLogPath(char *log_path);
 
@@ -68,7 +68,7 @@ private:
     size_t buffer_size = 0;
     std::recursive_mutex log_mtx;
     LogBufferHeader log_header;
-    z_stream zStream;
+    z_stream zStream{};
     bool is_compress = false;
 };
 

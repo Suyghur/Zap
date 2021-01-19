@@ -4,7 +4,6 @@
 
 #include "include/flush_buffer.h"
 
-
 FlushBuffer::FlushBuffer(FILE *log_file, size_t size) : capacity(size), log_file(log_file) {}
 
 FlushBuffer::~FlushBuffer() {

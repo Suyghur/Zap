@@ -7,6 +7,7 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import cn.flyfun.zap.Zap
+import java.lang.RuntimeException
 
 /**
  * @author #Suyghur,
@@ -45,5 +46,14 @@ class MainActivity : Activity(), View.OnClickListener {
     }
 
     override fun onClick(v: View?) {
+        v?.apply {
+            when (tag as Int) {
+                9 -> createCrash()
+            }
+        }
+    }
+
+    private fun createCrash() {
+        throw RuntimeException("test crash")
     }
 }

@@ -23,7 +23,7 @@ object ZapInit {
 
     @JvmStatic
     fun install(context: Context) {
-        val level = Level.INFO
+        val level = Level.VERBOSE
         val wrapInterceptor = object : IInterceptor {
             override fun intercept(data: ZapData): Boolean {
 //                data.tag = "Zap-${data.tag}"
@@ -50,17 +50,16 @@ object ZapInit {
                 .addAppender(appender)
                 .addAppender(fileAppender)
                 .create()
-
     }
 
     private fun getLogDir(context: Context): File {
-        var log = context.getExternalFilesDir("logs")
-        if (log == null) {
-            log = File(context.filesDir, "logs")
+        var path = context.getExternalFilesDir("zap")
+        if (path == null) {
+            path = File(context.filesDir, "zap")
         }
-        if (!log.exists()) {
-            log.mkdirs()
+        if (!path.exists()) {
+            path.mkdirs()
         }
-        return log
+        return path
     }
 }

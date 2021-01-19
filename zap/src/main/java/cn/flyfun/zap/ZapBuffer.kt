@@ -73,7 +73,7 @@ class ZapBuffer(private var bufferPath: String,
     private external fun changeLogPathNative(ptr: Long, logPath: String)
 
     companion object {
-        const val TAG = "zap"
+        const val TAG = "flyfun_zap"
 
         @JvmStatic
         private external fun initNative(bufferPath: String, capacity: Int, logPath: String, compress: Boolean): Long

@@ -12,6 +12,7 @@ object Level {
     const val WARN = 5
     const val ERROR = 6
 
+    @JvmStatic
     fun getLevelName(level: Int): String {
         return when (level) {
             VERBOSE -> "VERBOSE"

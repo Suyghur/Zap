@@ -15,7 +15,7 @@ import java.io.File
  */
 class FileAppender(builder: Builder) : AbsAppender() {
 
-    private lateinit var logBuffer: ZapBuffer
+    private var logBuffer: ZapBuffer
     private lateinit var formatter: IFormatter
 
     init {
