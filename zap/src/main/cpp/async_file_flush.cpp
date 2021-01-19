@@ -16,9 +16,9 @@ void AsyncFileFlush::asyncLogThread() {
     while (true) {
         std::unique_lock<std::mutex> _lck_async_log_thread(async_mtx);
         while (!async_buffer.empty()) {
-            FlushBuffer *data = async_buffer.back();
+            FlushBuffer *_data = async_buffer.back();
             async_buffer.pop_back();
-            flush(data);
+            flush(_data);
         }
         if (exit) {
             return;
@@ -26,7 +26,6 @@ void AsyncFileFlush::asyncLogThread() {
         async_condition.wait(_lck_async_log_thread);
     }
 }
-
 
 ssize_t AsyncFileFlush::flush(FlushBuffer *buffer) {
     ssize_t _written = 0;
@@ -39,7 +38,7 @@ ssize_t AsyncFileFlush::flush(FlushBuffer *buffer) {
     return _written;
 }
 
-bool AsyncFileFlush::asyncFlush(FlushBuffer *buffer) {
+bool AsyncFileFlush::async_flush(FlushBuffer *buffer) {
     std::unique_lock<std::mutex> _lck_async_flush(async_mtx);
     if (exit) {
         delete buffer;

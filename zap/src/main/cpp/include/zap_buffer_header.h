@@ -2,26 +2,28 @@
 // Created by #Suyghur, on 2021/1/18.
 //
 
-#ifndef ZAP_LOG_BUFFER_HEADER_H
-#define ZAP_LOG_BUFFER_HEADER_H
+#ifndef ZAP_ZAP_BUFFER_HEADER_H
+#define ZAP_ZAP_BUFFER_HEADER_H
 
 #include <string>
 
-namespace log_header {
+namespace zap_header {
     static const char kMagicHeader = '\x11';
+
     struct Header {
         char magic;
         size_t log_len;
         size_t log_path_len;
         char *log_path;
-        bool compress;
+        bool isCompress;
     };
 
-    class LogBufferHeader {
-    public:
-        LogBufferHeader(void *data, size_t size);
+    class ZapBufferHeader {
 
-        ~LogBufferHeader();
+    public:
+        ZapBufferHeader(void *data, size_t size);
+
+        ~ZapBufferHeader();
 
         void initHeader(Header &header);
 
@@ -29,7 +31,7 @@ namespace log_header {
 
         void *ptr();
 
-        void *writePtr();
+        void *write_ptr();
 
         Header *getHeader();
 
@@ -41,13 +43,13 @@ namespace log_header {
 
         char *getLogPath();
 
-        void setLogLen(size_t len);
+        void setLogLen(size_t log_len);
 
-        bool isCompress();
+        bool getIsCompress();
 
         bool isAvailable();
 
-        static size_t calculateHeaderLen(size_t len);
+        static size_t calculateHeaderLen(size_t log_path_len);
 
     private:
         char *data_ptr;
@@ -55,4 +57,5 @@ namespace log_header {
     };
 }
 
-#endif //ZAP_LOG_BUFFER_HEADER_H
+
+#endif //ZAP_ZAP_BUFFER_HEADER_H

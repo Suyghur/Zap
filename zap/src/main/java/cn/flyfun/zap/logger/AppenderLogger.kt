@@ -4,11 +4,15 @@ import cn.flyfun.zap.appender.IAppender
 
 /**
  * @author #Suyghur,
- * Created on 2021/1/15
+ * Created on 2021/1/19
  */
-class AppenderLogger : ILogger {
+class AppenderLogger private constructor() : ILogger {
 
     private val appenderList: MutableList<IAppender> = mutableListOf()
+
+    fun getAppenderList(): MutableList<IAppender> {
+        return appenderList
+    }
 
     fun addAppender(appender: IAppender) {
         appenderList.add(appender)
@@ -34,8 +38,7 @@ class AppenderLogger : ILogger {
     }
 
     class Builder {
-        private var logger: AppenderLogger = AppenderLogger()
-
+        private val logger: AppenderLogger = AppenderLogger()
         fun addAppender(appender: IAppender): Builder {
             logger.addAppender(appender)
             return this
@@ -45,5 +48,4 @@ class AppenderLogger : ILogger {
             return logger
         }
     }
-
 }

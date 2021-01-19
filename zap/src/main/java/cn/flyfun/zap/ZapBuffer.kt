@@ -4,18 +4,17 @@ import android.util.Log
 
 /**
  * @author #Suyghur,
- * Created on 2021/1/15
+ * Created on 2021/1/19
  */
-class ZapBuffer(private var bufferPath: String,
-                private var capacity: Int,
-                private var logPath: String,
-                private var compress: Boolean) {
+class ZapBuffer(var bufferPath: String,
+                var capacity: Int,
+                var logPath: String,
+                var compress: Boolean) {
 
     private var ptr = 0L
 
     init {
         System.loadLibrary("zap")
-
         try {
             ptr = initNative(bufferPath, capacity, logPath, compress)
         } catch (e: Exception) {
@@ -27,7 +26,6 @@ class ZapBuffer(private var bufferPath: String,
         if (ptr != 0L) {
             try {
                 changeLogPathNative(ptr, logPath)
-                this.logPath = logPath
             } catch (e: Exception) {
                 Log.e(TAG, Zap.getStackTraceString(e))
             }

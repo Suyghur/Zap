@@ -1,2 +1,3 @@
+rootProject.name='Zap'
 include ':demo'
 include ':zap'

@@ -1,12 +1,12 @@
 package cn.flyfun.zap.appender
 
 import android.util.Log
-import cn.flyfun.zap.Interceptor.IInterceptor
 import cn.flyfun.zap.Level
+import cn.flyfun.zap.interceptor.IInterceptor
 
 /**
  * @author #Suyghur,
- * Created on 2021/1/15
+ * Created on 2021/1/19
  */
 class AndroidAppender(builder: Builder) : AbsAppender() {
 

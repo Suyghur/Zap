@@ -7,6 +7,7 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import cn.flyfun.zap.Zap
+//import cn.flyfun.zap.Zap
 import java.lang.RuntimeException
 
 /**
@@ -20,7 +21,7 @@ class MainActivity : Activity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initView()
-        Zap.i("flyfun_game", "info222233334444")
+        Zap.i("flyfun_zap", "info222333444")
     }
 
 
@@ -40,9 +41,12 @@ class MainActivity : Activity(), View.OnClickListener {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        Zap.i("flyfun_game", "onBackPressed")
         Zap.flush()
+    }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        Zap.release()
     }
 
     override fun onClick(v: View?) {

@@ -3,15 +3,15 @@ package cn.flyfun.zap.appender
 import android.content.Context
 import android.os.Environment
 import android.text.TextUtils
-import cn.flyfun.zap.Interceptor.IInterceptor
 import cn.flyfun.zap.Level
 import cn.flyfun.zap.ZapBuffer
 import cn.flyfun.zap.formatter.IFormatter
+import cn.flyfun.zap.interceptor.IInterceptor
 import java.io.File
 
 /**
  * @author #Suyghur,
- * Created on 2021/1/15
+ * Created on 2021/1/19
  */
 class FileAppender(builder: Builder) : AbsAppender() {
 
@@ -118,5 +118,4 @@ class FileAppender(builder: Builder) : AbsAppender() {
         }
 
     }
-
 }

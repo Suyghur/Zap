@@ -14,12 +14,13 @@
 #include "flush_buffer.h"
 
 class AsyncFileFlush {
+
 public:
     AsyncFileFlush();
 
     ~AsyncFileFlush();
 
-    bool asyncFlush(FlushBuffer *buffer);
+    bool async_flush(FlushBuffer *buffer);
 
     void stopFlush();
 
@@ -29,12 +30,11 @@ private:
     ssize_t flush(FlushBuffer *buffer);
 
     bool exit = false;
-
     std::vector<FlushBuffer *> async_buffer;
     std::thread async_thread;
     std::condition_variable async_condition;
     std::mutex async_mtx;
-
 };
+
 
 #endif //ZAP_ASYNC_FILE_FLUSH_H

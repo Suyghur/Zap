@@ -2,7 +2,7 @@ package cn.flyfun.zap
 
 /**
  * @author #Suyghur,
- * Created on 2021/1/15
+ * Created on 2021/1/19
  */
 object Level {
 
@@ -20,13 +20,12 @@ object Level {
             INFO -> "INFO"
             WARN -> "WARN"
             ERROR -> "ERROR"
-            else -> {
+            else ->
                 if (level < VERBOSE) {
                     "VERBOSE-${VERBOSE - level}"
                 } else {
-                    "ERROR+${level - ERROR}"
+                    "ERROR-${level - ERROR}"
                 }
-            }
         }
     }
 
@@ -38,13 +37,12 @@ object Level {
             INFO -> "I"
             WARN -> "W"
             ERROR -> "E"
-            else -> {
+            else ->
                 if (level < VERBOSE) {
                     "V-${VERBOSE - level}"
                 } else {
-                    "E+${level - ERROR}"
+                    "E-${level - ERROR}"
                 }
-            }
         }
     }
 }

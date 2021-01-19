@@ -11,6 +11,7 @@
 #include <stdio.h>
 
 class FlushBuffer {
+
 public:
     FlushBuffer(FILE *log_file, size_t size = 128);
 
@@ -29,14 +30,14 @@ public:
     void releaseThis(void *pVoid);
 
 private:
-    FILE *log_file = nullptr;
-    void *release = nullptr;
+    FILE *log_file_ptr = nullptr;
+    void *release_ptr = nullptr;
     char *data_ptr = nullptr;
     char *write_ptr = nullptr;
     size_t capacity;
 
     size_t emptySize();
-};
 
+};
 
 #endif //ZAP_FLUSH_BUFFER_H

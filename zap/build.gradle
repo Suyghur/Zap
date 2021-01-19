@@ -21,12 +21,9 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles 'proguard-rules.pro'
         }
-    }
-    compileOptions {
-        kotlinOptions.freeCompilerArgs += ['-module-name', "cn.flyfun.zap"]
     }
 
     dexOptions {
@@ -39,7 +36,12 @@ android {
             version "3.10.2"
         }
     }
+
+    compileOptions {
+        kotlinOptions.freeCompilerArgs += ['-module-name', "cn.flyfun.zap"]
+    }
 }
 
 dependencies {
+
 }
