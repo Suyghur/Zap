@@ -8,7 +8,7 @@ import cn.flyfun.zap.interceptor.IInterceptor
  * @author #Suyghur,
  * Created on 2021/1/19
  */
-class AndroidAppender(builder: Builder) : AbsAppender() {
+class ZapAppender(builder: Builder) : AbsAppender() {
 
     init {
         setLevel(builder.level)
@@ -33,8 +33,8 @@ class AndroidAppender(builder: Builder) : AbsAppender() {
             return this
         }
 
-        fun create(): AndroidAppender {
-            return AndroidAppender(this)
+        fun create(): ZapAppender {
+            return ZapAppender(this)
         }
 
     }

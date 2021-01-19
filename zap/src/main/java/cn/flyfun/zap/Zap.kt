@@ -3,11 +3,11 @@ package cn.flyfun.zap
 import android.app.Application
 import android.content.Context
 import android.os.Process
-import cn.flyfun.zap.appender.AndroidAppender
+import cn.flyfun.zap.appender.ZapAppender
 import cn.flyfun.zap.appender.FileAppender
 import cn.flyfun.zap.formatter.DateFileFormatter
 import cn.flyfun.zap.interceptor.IInterceptor
-import cn.flyfun.zap.logger.AndroidLogger
+import cn.flyfun.zap.logger.ZapLogger
 import cn.flyfun.zap.logger.AppenderLogger
 import cn.flyfun.zap.logger.ILogger
 import java.io.File
@@ -23,7 +23,7 @@ import java.util.*
  */
 object Zap {
 
-    private var iLoggerDelegate: ILogger = AndroidLogger()
+    private var iLoggerDelegate: ILogger = ZapLogger()
     private var mUncaughtExceptionHandler: Thread.UncaughtExceptionHandler? = null
 
     private const val DEFAULT_BUFFER_SIZE = 1024 * 400
@@ -115,7 +115,7 @@ object Zap {
             }
         }
 
-        val logAppender = AndroidAppender.Builder()
+        val logAppender = ZapAppender.Builder()
                 .setLevel(Level.VERBOSE)
                 .addInterceptor(wrapInterceptor)
                 .create()

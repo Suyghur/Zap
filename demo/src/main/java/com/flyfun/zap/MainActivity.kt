@@ -7,7 +7,6 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import cn.flyfun.zap.Zap
-//import cn.flyfun.zap.Zap
 import java.lang.RuntimeException
 
 /**
