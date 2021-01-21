@@ -6,8 +6,15 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import cn.flyfun.zap.ZapFileUtils
 import cn.flyfun.zap.Zap
-import java.lang.RuntimeException
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 
 /**
  * @author #Suyghur,
@@ -20,7 +27,13 @@ class MainActivity : Activity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initView()
-        Zap.i("flyfun_zap", "info222333444")
+        val path = getExternalFilesDir("zap")?.absolutePath
+        path?.apply {
+            val logFiles = ZapFileUtils.getAllLogFiles(this)
+            for (log in logFiles) {
+                ZapFileUtils.copyFile(File("$this/$log"), File("$this/tmp/$log"))
+            }
+        }
     }
 
 
@@ -50,8 +63,13 @@ class MainActivity : Activity(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         v?.apply {
+//            val path = getExternalFilesDir("zap")?.absolutePath
             when (tag as Int) {
-                9 -> createCrash()
+                0 -> createCrash()
+                1 -> {
+                    ZapFileUtils.packLogFiles(this@MainActivity)
+                }
+                2 -> ZapFileUtils.deleteFile(getExternalFilesDir("zap")?.absolutePath + "/tmp")
             }
         }
     }
@@ -59,4 +77,5 @@ class MainActivity : Activity(), View.OnClickListener {
     private fun createCrash() {
         throw RuntimeException("test crash")
     }
+
 }

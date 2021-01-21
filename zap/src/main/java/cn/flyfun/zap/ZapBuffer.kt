@@ -1,6 +1,9 @@
 package cn.flyfun.zap
 
 import android.util.Log
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * @author #Suyghur,
@@ -62,6 +65,7 @@ class ZapBuffer(var bufferPath: String,
         }
     }
 
+
     private external fun writeNative(ptr: Long, log: String)
 
     private external fun flushAsyncNative(ptr: Long)
@@ -70,10 +74,34 @@ class ZapBuffer(var bufferPath: String,
 
     private external fun changeLogPathNative(ptr: Long, logPath: String)
 
+
     companion object {
         const val TAG = "flyfun_zap"
 
         @JvmStatic
         private external fun initNative(bufferPath: String, capacity: Int, logPath: String, compress: Boolean): Long
+
+        @JvmStatic
+        external fun showAllFiles(path: String)
+
+//        @JvmStatic
+//        fun showFiles(path: String) {
+//            val calendar = Calendar.getInstance()
+//            calendar.add(Calendar.DATE, -30)
+//            val time = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
+//            Zap.d(TAG, time)
+////            Zap.d(TAG,calendar.time.toString())
+//            val fileTree = File(path).walk()
+//            fileTree.maxDepth(1)
+//                    .filter { it.isFile }
+//                    .filter { it.extension == "txt" }
+//                    .forEach {
+//                        if (it.name == "$time.txt") {
+//                            Zap.d(TAG, it.name)
+//                        }
+//                    }
+//
+//
+//        }
     }
 }

@@ -7,14 +7,15 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sstream>
+#include <file_toolkit.h>
 
 #include "include/zap_buffer.h"
 
 static const char *const kClassDocScanner = "cn/flyfun/zap/ZapBuffer";
 
-static char *openMMap(int _buffer_fd, size_t _buffer_size);
+static char *openMMap(int buffer_fd, size_t buffer_size);
 
-static void writeDirtyLogToFile(int _buffer_fd);
+static void writeDirtyLogToFile(int buffer_fd);
 
 static AsyncFileFlush *pAsyncFileFlush = nullptr;
 
@@ -37,26 +38,27 @@ static jlong initNative(JNIEnv *env, jclass clazz, jstring _buffer_path,
         buffer_ptr = new char[buffer_size];
         map_buffer = false;
     }
-    auto *pZapBuffer = new ZapBuffer(buffer_ptr, buffer_size);
-    pZapBuffer->setAsyncFileFlush(pAsyncFileFlush);
+    auto *zap_buffer = new ZapBuffer(buffer_ptr, buffer_size);
+    zap_buffer->setAsyncFileFlush(pAsyncFileFlush);
     //将buffer内的数据清0， 并写入日志文件路径
-    pZapBuffer->initData((char *) log_path, strlen(log_path), _compress);
-    pZapBuffer->map_buffer = map_buffer;
+    zap_buffer->initData((char *) log_path, strlen(log_path), _compress);
+    zap_buffer->map_buffer = map_buffer;
 
     env->ReleaseStringUTFChars(_buffer_path, buffer_path);
     env->ReleaseStringUTFChars(_log_path, log_path);
-    return reinterpret_cast<long>(pZapBuffer);
+    return reinterpret_cast<long>(zap_buffer);
 }
 
-static char *openMMap(int _buffer_fd, size_t _buffer_size) {
+static char *openMMap(int buffer_fd, size_t buffer_size) {
     char *map_ptr = nullptr;
-    if (_buffer_fd != -1) {
+    if (buffer_fd != -1) {
         // 写脏数据
-        writeDirtyLogToFile(_buffer_fd);
+        writeDirtyLogToFile(buffer_fd);
         // 根据 buffer size 调整 buffer 文件大小
-        ftruncate(_buffer_fd, static_cast<int>(_buffer_size));
-        lseek(_buffer_fd, 0, SEEK_SET);
-        map_ptr = (char *) mmap(0, _buffer_size, PROT_WRITE | PROT_READ, MAP_SHARED, _buffer_fd, 0);
+        ftruncate(buffer_fd, static_cast<int>(buffer_size));
+        lseek(buffer_fd, 0, SEEK_SET);
+        map_ptr = (char *) mmap(nullptr, buffer_size, PROT_WRITE | PROT_READ, MAP_SHARED, buffer_fd,
+                                0);
         if (map_ptr == MAP_FAILED) {
             map_ptr = nullptr;
         }
@@ -64,14 +66,14 @@ static char *openMMap(int _buffer_fd, size_t _buffer_size) {
     return map_ptr;
 }
 
-static void writeDirtyLogToFile(int _buffer_fd) {
+static void writeDirtyLogToFile(int buffer_fd) {
     struct stat file_stat{};
-    if (fstat(_buffer_fd, &file_stat) >= 0) {
+    if (fstat(buffer_fd, &file_stat) >= 0) {
         auto buffered_size = static_cast<size_t>(file_stat.st_size);
         // buffer_size 必须是大于文件头长度的，否则会导致下标溢出
         if (buffered_size > ZapBufferHeader::calculateHeaderLen(0)) {
             char *buffer_ptr_tmp = (char *) mmap(0, buffered_size, PROT_WRITE | PROT_READ,
-                                                 MAP_SHARED, _buffer_fd, 0);
+                                                 MAP_SHARED, buffer_fd, 0);
             if (buffer_ptr_tmp != MAP_FAILED) {
                 auto *tmp = new ZapBuffer(buffer_ptr_tmp, buffered_size);
                 size_t data_size = tmp->length();
@@ -85,37 +87,43 @@ static void writeDirtyLogToFile(int _buffer_fd) {
     }
 }
 
-static void writeNative(JNIEnv *env, jobject instance, jlong _ptr, jstring _log) {
+static void writeNative(JNIEnv *env, jobject instance, jlong ptr, jstring _log) {
     const char *log = env->GetStringUTFChars(_log, 0);
     jsize log_len = env->GetStringUTFLength(_log);
-    auto *pZapBuffer = reinterpret_cast<ZapBuffer *>(_ptr);
+    auto *zap_buffer = reinterpret_cast<ZapBuffer *>(ptr);
     // 缓存写不下时异步刷新
-    if (log_len >= pZapBuffer->emptySize()) {
-        pZapBuffer->asyncFlush(pAsyncFileFlush);
+    if (log_len >= zap_buffer->emptySize()) {
+        zap_buffer->asyncFlush(pAsyncFileFlush);
     }
-    pZapBuffer->append(log, (size_t) log_len);
+    zap_buffer->append(log, (size_t) log_len);
     env->ReleaseStringUTFChars(_log, log);
 }
 
-static void releaseNative(JNIEnv *env, jobject instance, jlong _ptr) {
-    auto *pZapBuffer = reinterpret_cast<ZapBuffer *>(_ptr);
-    pZapBuffer->asyncFlush(pAsyncFileFlush, pZapBuffer);
+static void releaseNative(JNIEnv *env, jobject instance, jlong ptr) {
+    auto *zap_buffer = reinterpret_cast<ZapBuffer *>(ptr);
+    zap_buffer->asyncFlush(pAsyncFileFlush, zap_buffer);
     if (pAsyncFileFlush != nullptr) {
         delete pAsyncFileFlush;
     }
     pAsyncFileFlush = nullptr;
 }
 
-static void changeLogPathNative(JNIEnv *env, jobject instance, jlong _ptr, jstring logFilePath) {
-    const char *log_path = env->GetStringUTFChars(logFilePath, 0);
-    auto *pZapBuffer = reinterpret_cast<ZapBuffer *>(_ptr);
-    pZapBuffer->changeLogPath(const_cast<char *>(log_path));
-    env->ReleaseStringUTFChars(logFilePath, log_path);
+static void changeLogPathNative(JNIEnv *env, jobject instance, jlong ptr, jstring log_file_path) {
+    const char *log_path = env->GetStringUTFChars(log_file_path, JNI_FALSE);
+    auto *zap_buffer = reinterpret_cast<ZapBuffer *>(ptr);
+    zap_buffer->changeLogPath(const_cast<char *>(log_path));
+    env->ReleaseStringUTFChars(log_file_path, log_path);
 }
 
-static void flushAsyncNative(JNIEnv *env, jobject instance, jlong _ptr) {
-    auto *pZapBuffer = reinterpret_cast<ZapBuffer *>(_ptr);
-    pZapBuffer->asyncFlush(pAsyncFileFlush);
+static void flushAsyncNative(JNIEnv *env, jobject instance, jlong ptr) {
+    auto *zap_buffer = reinterpret_cast<ZapBuffer *>(ptr);
+    zap_buffer->asyncFlush(pAsyncFileFlush);
+}
+
+static void showAllFiles(JNIEnv *env, jclass clazz, jstring path) {
+    const char *dir_path = env->GetStringUTFChars(path, JNI_FALSE);
+    FileToolkit::showAllFiles(dir_path);
+    env->ReleaseStringUTFChars(path, dir_path);
 }
 
 static JNINativeMethod gMethods[] = {
@@ -148,6 +156,11 @@ static JNINativeMethod gMethods[] = {
                 "releaseNative",
                 "(J)V",
                 (void *) releaseNative
+        },
+        {
+                "showAllFiles",
+                "(Ljava/lang/String;)V",
+                (void *) showAllFiles
         }
 
 };

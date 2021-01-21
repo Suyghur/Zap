@@ -66,8 +66,8 @@ FILE *FlushBuffer::logFile() {
     return log_file_ptr;
 }
 
-void FlushBuffer::releaseThis(void *pVoid) {
-    this->release_ptr = pVoid;
+void FlushBuffer::releaseThis(void *buffer) {
+    this->release_ptr = buffer;
 }
 
 

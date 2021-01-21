@@ -27,7 +27,7 @@ public:
 
     FILE *logFile();
 
-    void releaseThis(void *pVoid);
+    void releaseThis(void *buffer);
 
 private:
     FILE *log_file_ptr = nullptr;

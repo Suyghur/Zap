@@ -27,15 +27,33 @@ object Zap {
     private var mUncaughtExceptionHandler: Thread.UncaughtExceptionHandler? = null
 
     private const val DEFAULT_BUFFER_SIZE = 1024 * 400
+    private const val DEFAULT_PAST_TIME = -3
+
+    private const val TAG = "flyfun_zap"
 
     @JvmStatic
-    fun v(tag: String, msg: String) {
+    fun v(msg: String) {
+        v(TAG, msg)
+    }
+
+    @JvmStatic
+    fun v(msg: String, tag: String = TAG) {
         println(Level.VERBOSE, tag, msg)
     }
 
     @JvmStatic
-    fun d(tag: String, msg: String) {
+    fun d(msg: String) {
+        d(TAG, msg)
+    }
+
+    @JvmStatic
+    fun d(msg: String, tag: String = TAG) {
         println(Level.DEBUG, tag, msg)
+    }
+
+    @JvmStatic
+    fun i(msg: String) {
+        i(TAG, msg)
     }
 
     @JvmStatic
@@ -44,13 +62,19 @@ object Zap {
     }
 
     @JvmStatic
+    fun w(msg: String) {
+        w(TAG, msg)
+    }
+
+    @JvmStatic
     fun w(tag: String, msg: String) {
         println(Level.WARN, tag, msg)
     }
 
+
     @JvmStatic
-    fun w(tag: String, msg: String, throwable: Throwable) {
-        println(Level.WARN, tag, msg + "\n${getStackTraceString(throwable)}")
+    fun w(throwable: Throwable) {
+        w(TAG, throwable)
     }
 
     @JvmStatic
@@ -59,18 +83,33 @@ object Zap {
     }
 
     @JvmStatic
+    fun w(tag: String, msg: String, throwable: Throwable) {
+        println(Level.WARN, tag, msg + "\n${getStackTraceString(throwable)}")
+    }
+
+    @JvmStatic
+    fun e(msg: String) {
+        e(TAG, msg)
+    }
+
+    @JvmStatic
     fun e(tag: String, msg: String) {
         println(Level.ERROR, tag, msg)
     }
 
     @JvmStatic
-    fun e(tag: String, msg: String, throwable: Throwable) {
-        println(Level.ERROR, tag, msg + "\n${getStackTraceString(throwable)}")
+    fun e(throwable: Throwable) {
+        e(TAG, throwable)
     }
 
     @JvmStatic
     fun e(tag: String, throwable: Throwable) {
         println(Level.ERROR, tag, getStackTraceString(throwable))
+    }
+
+    @JvmStatic
+    fun e(tag: String, msg: String, throwable: Throwable) {
+        println(Level.ERROR, tag, msg + "\n${getStackTraceString(throwable)}")
     }
 
     @JvmStatic
@@ -107,8 +146,10 @@ object Zap {
         return sw.toString()
     }
 
+
     @JvmStatic
-    fun default(application: Application) {
+    @JvmOverloads
+    fun default(application: Application, past: Int = DEFAULT_PAST_TIME) {
         val wrapInterceptor = object : IInterceptor {
             override fun intercept(data: ZapData): Boolean {
                 return true
@@ -134,12 +175,13 @@ object Zap {
                 .setBufferSize(DEFAULT_BUFFER_SIZE)
                 .create()
         initCrashHandler()
+        deletePastLog(zapFolder.absolutePath, past)
         iLoggerDelegate = AppenderLogger.Builder()
                 .addAppender(logAppender)
                 .addAppender(fileAppender)
                 .create()
-
     }
+
 
     private fun initCrashHandler() {
         mUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
@@ -152,6 +194,23 @@ object Zap {
             }
         }
     }
+
+    private fun deletePastLog(path: String, past: Int) {
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.DATE, past)
+        val time = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
+        val fileTree = File(path).walk()
+        fileTree.maxDepth(1)
+                .filter { it.isFile }
+                .filter { it.extension == "txt" }
+                .forEach {
+                    if (it.name == "$time.txt") {
+                        d("delete log file : ${it.name}")
+                        it.delete()
+                    }
+                }
+    }
+
 
     private fun getLogDir(context: Context): File {
         var path = context.getExternalFilesDir("zap")

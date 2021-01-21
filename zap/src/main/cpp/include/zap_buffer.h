@@ -22,15 +22,15 @@ using namespace zap_header;
 
 class ZapBuffer {
 public:
-    ZapBuffer(char *_ptr, size_t _buffer_size);
+    ZapBuffer(char *ptr, size_t buffer_size);
 
     ~ZapBuffer();
 
-    void initData(char *log_path, size_t log_path_len, bool is_compress);
+    void initData(char *log_path, size_t log_path_len, bool compress);
 
     size_t length();
 
-    size_t append(const char *_log, size_t _len);
+    size_t append(const char *log, size_t len);
 
     void release();
 
@@ -38,13 +38,13 @@ public:
 
     char *getLogPath();
 
-    void setAsyncFileFlush(AsyncFileFlush *_file_flush);
+    void setAsyncFileFlush(AsyncFileFlush *file_flush);
 
     void asyncFlush();
 
-    void asyncFlush(AsyncFileFlush *_file_flush);
+    void asyncFlush(AsyncFileFlush *file_flush);
 
-    void asyncFlush(AsyncFileFlush *fileFlush, ZapBuffer *releaseThis);
+    void asyncFlush(AsyncFileFlush *file_flush, ZapBuffer *buffer);
 
     void changeLogPath(char *log_path);
 
@@ -54,7 +54,7 @@ public:
 private:
     void clear();
 
-    void setLength(size_t _len);
+    void setLength(size_t len);
 
     bool initCompress(bool compress);
 
