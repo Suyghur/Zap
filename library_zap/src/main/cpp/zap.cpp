@@ -7,7 +7,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sstream>
-#include <file_toolkit.h>
 
 #include "include/zap_buffer.h"
 
@@ -120,12 +119,6 @@ static void flushAsyncNative(JNIEnv *env, jobject instance, jlong ptr) {
     zap_buffer->asyncFlush(pAsyncFileFlush);
 }
 
-static void showAllFiles(JNIEnv *env, jclass clazz, jstring path) {
-    const char *dir_path = env->GetStringUTFChars(path, JNI_FALSE);
-    FileToolkit::showAllFiles(dir_path);
-    env->ReleaseStringUTFChars(path, dir_path);
-}
-
 static JNINativeMethod gMethods[] = {
 
         {
@@ -156,13 +149,7 @@ static JNINativeMethod gMethods[] = {
                 "releaseNative",
                 "(J)V",
                 (void *) releaseNative
-        },
-        {
-                "showAllFiles",
-                "(Ljava/lang/String;)V",
-                (void *) showAllFiles
         }
-
 };
 
 extern "C"

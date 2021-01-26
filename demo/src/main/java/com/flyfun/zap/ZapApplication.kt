@@ -10,6 +10,6 @@ import cn.flyfun.zap.Zap
 class ZapApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        Zap.default(this)
+        Zap.default(this, debug = true)
     }
 }

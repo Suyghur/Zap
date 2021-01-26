@@ -1,18 +1,19 @@
 package cn.flyfun.zap
 
 import android.app.Application
-import android.content.Context
 import android.os.Process
-import cn.flyfun.zap.appender.ZapAppender
 import cn.flyfun.zap.appender.FileAppender
+import cn.flyfun.zap.appender.ZapAppender
 import cn.flyfun.zap.formatter.DateFileFormatter
 import cn.flyfun.zap.interceptor.IInterceptor
-import cn.flyfun.zap.logger.ZapLogger
 import cn.flyfun.zap.logger.AppenderLogger
 import cn.flyfun.zap.logger.ILogger
+import cn.flyfun.zap.logger.ZapLogger
+import cn.flyfun.zap.toolkit.FileUtils
 import java.io.File
 import java.io.PrintWriter
 import java.io.StringWriter
+import java.lang.reflect.Array
 import java.net.UnknownHostException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -31,75 +32,40 @@ object Zap {
 
     private const val TAG = "flyfun_zap"
 
+
     @JvmStatic
-    fun v(msg: String) {
-        v(TAG, msg)
+    fun d(any: Any) {
+        d(TAG, any)
     }
 
     @JvmStatic
-    fun v(msg: String, tag: String = TAG) {
-        println(Level.VERBOSE, tag, msg)
+    fun d(tag: String, any: Any) {
+        println(Level.DEBUG, tag, any)
     }
 
     @JvmStatic
-    fun d(msg: String) {
-        d(TAG, msg)
+    fun i(any: Any) {
+        i(TAG, any)
     }
 
     @JvmStatic
-    fun d(msg: String, tag: String = TAG) {
-        println(Level.DEBUG, tag, msg)
+    fun i(tag: String, any: Any) {
+        println(Level.INFO, tag, any)
     }
 
     @JvmStatic
-    fun i(msg: String) {
-        i(TAG, msg)
-    }
-
-    @JvmStatic
-    fun i(tag: String, msg: String) {
-        println(Level.INFO, tag, msg)
-    }
-
-    @JvmStatic
-    fun w(msg: String) {
-        w(TAG, msg)
-    }
-
-    @JvmStatic
-    fun w(tag: String, msg: String) {
-        println(Level.WARN, tag, msg)
-    }
-
-
-    @JvmStatic
-    fun w(throwable: Throwable) {
-        w(TAG, throwable)
-    }
-
-    @JvmStatic
-    fun w(tag: String, throwable: Throwable) {
-        println(Level.WARN, tag, getStackTraceString(throwable))
-    }
-
-    @JvmStatic
-    fun w(tag: String, msg: String, throwable: Throwable) {
-        println(Level.WARN, tag, msg + "\n${getStackTraceString(throwable)}")
-    }
-
-    @JvmStatic
-    fun e(msg: String) {
-        e(TAG, msg)
-    }
-
-    @JvmStatic
-    fun e(tag: String, msg: String) {
-        println(Level.ERROR, tag, msg)
+    fun e(any: Any) {
+        e(TAG, any)
     }
 
     @JvmStatic
     fun e(throwable: Throwable) {
         e(TAG, throwable)
+    }
+
+    @JvmStatic
+    fun e(tag: String, any: Any) {
+        println(Level.ERROR, tag, any)
     }
 
     @JvmStatic
@@ -115,6 +81,11 @@ object Zap {
     @JvmStatic
     fun println(priority: Int, tag: String, msg: String) {
         iLoggerDelegate.println(priority, tag, msg)
+    }
+
+    @JvmStatic
+    fun println(priority: Int, tag: String, any: Any?) {
+        iLoggerDelegate.println(priority, tag, obj2str(any))
     }
 
     @JvmStatic
@@ -146,28 +117,54 @@ object Zap {
         return sw.toString()
     }
 
+    private fun obj2str(any: Any?): String {
+        any?.let {
+            val clz: Class<out Any?> = it.javaClass
+            if (clz.isArray) {
+                val sb = StringBuilder(clz.simpleName)
+                sb.append("[ ")
+                val len = Array.getLength(any)
+                for (i in 0 until len) {
+                    if (i != 0) {
+                        sb.append(", ")
+                    }
+                    val tmp = Array.get(any, i)
+                    sb.append(tmp)
+                }
+                sb.append(" ]")
+                return sb.toString()
+            } else {
+                return "" + it
+            }
+        }
+        return "null"
+    }
+
 
     @JvmStatic
     @JvmOverloads
-    fun default(application: Application, past: Int = DEFAULT_PAST_TIME) {
+    fun default(application: Application, past: Int = DEFAULT_PAST_TIME, debug: Boolean = false) {
         val wrapInterceptor = object : IInterceptor {
             override fun intercept(data: ZapData): Boolean {
                 return true
             }
         }
-
+        var level = Level.INFO
+        if (debug) {
+            level = Level.DEBUG
+        }
         val logAppender = ZapAppender.Builder()
-                .setLevel(Level.VERBOSE)
+                .setLevel(level)
                 .addInterceptor(wrapInterceptor)
                 .create()
 
-        val zapFolder = getLogDir(application)
+        val zapFolder = FileUtils.getLogDir(application)
         val bufferPath = zapFolder.absolutePath + File.separator + ".cache"
         val time = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         val logPath = zapFolder.absolutePath + File.separator + time + ".txt"
         val fileAppender = FileAppender.Builder(application)
                 .setLogFilePath(logPath)
-                .setLevel(Level.VERBOSE)
+                .setLevel(Level.DEBUG)
                 .addInterceptor(wrapInterceptor)
                 .setBufferFilePath(bufferPath)
                 .setFormatter(DateFileFormatter())
@@ -175,18 +172,20 @@ object Zap {
                 .setBufferSize(DEFAULT_BUFFER_SIZE)
                 .create()
         initCrashHandler()
-        deletePastLog(zapFolder.absolutePath, past)
+        FileUtils.deletePastLog(zapFolder.absolutePath, past)
         iLoggerDelegate = AppenderLogger.Builder()
                 .addAppender(logAppender)
                 .addAppender(fileAppender)
                 .create()
+
+//        callback.onResult(0, "zap framework init success")
     }
 
 
     private fun initCrashHandler() {
         mUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { t, e ->
-            e("flyfun_zap", e)
+            e(e)
             if (mUncaughtExceptionHandler != null) {
                 mUncaughtExceptionHandler!!.uncaughtException(t, e)
             } else {
@@ -195,31 +194,4 @@ object Zap {
         }
     }
 
-    private fun deletePastLog(path: String, past: Int) {
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.DATE, past)
-        val time = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
-        val fileTree = File(path).walk()
-        fileTree.maxDepth(1)
-                .filter { it.isFile }
-                .filter { it.extension == "txt" }
-                .forEach {
-                    if (it.name == "$time.txt") {
-                        d("delete log file : ${it.name}")
-                        it.delete()
-                    }
-                }
-    }
-
-
-    private fun getLogDir(context: Context): File {
-        var path = context.getExternalFilesDir("zap")
-        if (path == null) {
-            path = File(context.filesDir, "zap")
-        }
-        if (!path.exists()) {
-            path.mkdirs()
-        }
-        return path
-    }
 }

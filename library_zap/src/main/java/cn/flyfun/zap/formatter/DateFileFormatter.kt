@@ -9,7 +9,7 @@ import java.util.*
  * @author #Suyghur,
  * Created on 2021/1/19
  */
-class DateFileFormatter @JvmOverloads constructor(pattern: String? = "yyy:MM:dd HH:mm:ss") : IFormatter {
+class DateFileFormatter @JvmOverloads constructor(pattern: String? = "yyy-MM-dd HH:mm:ss") : IFormatter {
 
     private var simpleDateFormat: SimpleDateFormat = SimpleDateFormat(pattern, Locale.getDefault())
     private var mDate: Date

@@ -29,7 +29,7 @@ class FileAppender(builder: Builder) : AbsAppender() {
     }
 
     override fun doAppend(level: Int, tag: String, msg: String) {
-        logBuffer.write(formatter.format(level, tag, msg))
+        logBuffer.write(formatter.format(level, tag, "$msg/&/"))
     }
 
     override fun flush() {
@@ -47,7 +47,7 @@ class FileAppender(builder: Builder) : AbsAppender() {
         internal var bufferFilePath = ""
         internal var logFilePath = ""
         internal var bufferSize = 4096
-        internal var level = Level.VERBOSE
+        internal var level = Level.DEBUG
         internal var interceptors: MutableList<IInterceptor> = mutableListOf()
         internal var formatter: IFormatter? = null
         internal var compress = false

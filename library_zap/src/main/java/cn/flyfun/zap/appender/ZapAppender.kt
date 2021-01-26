@@ -20,7 +20,7 @@ class ZapAppender(builder: Builder) : AbsAppender() {
     }
 
     class Builder {
-        internal var level = Level.VERBOSE
+        internal var level = Level.DEBUG
         internal var interceptors: MutableList<IInterceptor> = mutableListOf()
 
         fun setLevel(level: Int): Builder {

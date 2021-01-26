@@ -10,7 +10,7 @@ import cn.flyfun.zap.ZapData
 
 class LevelInterceptor : IInterceptor {
 
-    private var level = Level.VERBOSE
+    private var level = Level.DEBUG
 
     fun setLevel(level: Int) {
         this.level = level

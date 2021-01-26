@@ -21,7 +21,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles 'proguard-rules.pro'
         }
     }
@@ -43,5 +43,8 @@ android {
 }
 
 dependencies {
-
+//    compileOnly files('libs/flyfun_support_1.0.2.jar')
 }
+
+apply from: 'buildJar.gradle'
+//apply from: 'upload.gradle'

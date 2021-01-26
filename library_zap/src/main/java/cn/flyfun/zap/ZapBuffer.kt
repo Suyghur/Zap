@@ -80,28 +80,5 @@ class ZapBuffer(var bufferPath: String,
 
         @JvmStatic
         private external fun initNative(bufferPath: String, capacity: Int, logPath: String, compress: Boolean): Long
-
-        @JvmStatic
-        external fun showAllFiles(path: String)
-
-//        @JvmStatic
-//        fun showFiles(path: String) {
-//            val calendar = Calendar.getInstance()
-//            calendar.add(Calendar.DATE, -30)
-//            val time = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
-//            Zap.d(TAG, time)
-////            Zap.d(TAG,calendar.time.toString())
-//            val fileTree = File(path).walk()
-//            fileTree.maxDepth(1)
-//                    .filter { it.isFile }
-//                    .filter { it.extension == "txt" }
-//                    .forEach {
-//                        if (it.name == "$time.txt") {
-//                            Zap.d(TAG, it.name)
-//                        }
-//                    }
-//
-//
-//        }
     }
 }

@@ -6,23 +6,19 @@ package cn.flyfun.zap
  */
 object Level {
 
-    const val VERBOSE = 2
     const val DEBUG = 3
     const val INFO = 4
-    const val WARN = 5
     const val ERROR = 6
 
     @JvmStatic
     fun getLevelName(level: Int): String {
         return when (level) {
-            VERBOSE -> "VERBOSE"
             DEBUG -> "DEBUG"
             INFO -> "INFO"
-            WARN -> "WARN"
             ERROR -> "ERROR"
             else ->
-                if (level < VERBOSE) {
-                    "VERBOSE-${VERBOSE - level}"
+                if (level < DEBUG) {
+                    "DEBUG-${DEBUG - level}"
                 } else {
                     "ERROR-${level - ERROR}"
                 }
@@ -32,14 +28,12 @@ object Level {
     @JvmStatic
     fun getShortLevelName(level: Int): String {
         return when (level) {
-            VERBOSE -> "V"
             DEBUG -> "D"
             INFO -> "I"
-            WARN -> "W"
             ERROR -> "E"
             else ->
-                if (level < VERBOSE) {
-                    "V-${VERBOSE - level}"
+                if (level < DEBUG) {
+                    "V-${DEBUG - level}"
                 } else {
                     "E-${level - ERROR}"
                 }

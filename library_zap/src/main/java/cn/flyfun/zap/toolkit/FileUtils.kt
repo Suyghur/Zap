@@ -1,8 +1,11 @@
-package cn.flyfun.zap
+package cn.flyfun.zap.toolkit
 
 import android.content.Context
 import android.text.TextUtils
+import cn.flyfun.zap.Zap
 import java.io.*
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
@@ -10,9 +13,7 @@ import java.util.zip.ZipOutputStream
  * @author #Suyghur,
  * Created on 2021/1/20
  */
-object ZapFileUtils {
-
-
+object FileUtils {
     fun getAllLogFiles(path: String): MutableList<String> {
         val fileTree = File(path).walk()
         val logs = mutableListOf<String>()
@@ -29,6 +30,7 @@ object ZapFileUtils {
         val path = context.getExternalFilesDir("zap")?.absolutePath
         path?.let {
             val logFiles = getAllLogFiles(it)
+            Zap.i(logFiles)
             for (log in logFiles) {
                 copyFile(File("$it/$log"), File("$it/tmp/$log"))
             }
@@ -47,7 +49,7 @@ object ZapFileUtils {
      */
     fun copyFile(src: File, dest: File): Boolean {
         if (!src.exists()) {
-            Zap.w("src file is not exist : ${src.absolutePath}")
+            Zap.e("src file is not exist : ${src.absolutePath}")
             return false
         }
 
@@ -63,7 +65,7 @@ object ZapFileUtils {
             bos = BufferedOutputStream(FileOutputStream(dest))
 
             val buffer = ByteArray(4 * 1024)
-            var count = 0
+            var count: Int
             while (bis.read(buffer, 0, buffer.size).also { count = it } != -1) {
                 if (count > 0) {
                     bos.write(buffer, 0, count)
@@ -72,7 +74,7 @@ object ZapFileUtils {
             bos.flush()
             return true
         } catch (e: Exception) {
-            Zap.e("catch exception : ", e)
+            Zap.e(e)
             e.printStackTrace()
         } finally {
             bis?.close()
@@ -116,13 +118,43 @@ object ZapFileUtils {
             return false
         }
         if (file.isDirectory) {
-            for (f in file.listFiles()) {
-                deleteFile(f.absolutePath)
+            val files = file.listFiles()
+            if (files != null && files.isNotEmpty()) {
+                for (f in files) {
+                    deleteFile(f.absolutePath)
+                }
             }
         } else {
             return file.delete()
         }
         return file.delete()
+    }
+
+    fun deletePastLog(path: String, past: Int) {
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.DATE, past)
+        val time = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
+        val fileTree = File(path).walk()
+        fileTree.maxDepth(1)
+                .filter { it.isFile }
+                .filter { it.extension == "txt" }
+                .forEach {
+                    if (it.name == "$time.txt") {
+                        Zap.d("delete log file : ${it.name}")
+                        it.delete()
+                    }
+                }
+    }
+
+    fun getLogDir(context: Context): File {
+        var path = context.getExternalFilesDir("zap")
+        if (path == null) {
+            path = File(context.filesDir, "zap")
+        }
+        if (!path.exists()) {
+            path.mkdirs()
+        }
+        return path
     }
 
     /**
@@ -176,8 +208,10 @@ object ZapFileUtils {
         val folder = File(fileDir)
         if (folder.exists() && folder.isDirectory) {
             val files = folder.listFiles()
-            val filesList: List<File> = files.toList()
-            zip(filesList, zipFilePath)
+            if (files != null && files.isNotEmpty()) {
+                val filesList: List<File> = files.toList()
+                zip(filesList, zipFilePath)
+            }
         }
     }
 }

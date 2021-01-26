@@ -6,15 +6,10 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
-import cn.flyfun.zap.ZapFileUtils
+import cn.flyfun.zap.toolkit.FileUtils
 import cn.flyfun.zap.Zap
 import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.text.SimpleDateFormat
 import java.util.*
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
 
 /**
  * @author #Suyghur,
@@ -29,9 +24,9 @@ class MainActivity : Activity(), View.OnClickListener {
         initView()
         val path = getExternalFilesDir("zap")?.absolutePath
         path?.apply {
-            val logFiles = ZapFileUtils.getAllLogFiles(this)
+            val logFiles = FileUtils.getAllLogFiles(this)
             for (log in logFiles) {
-                ZapFileUtils.copyFile(File("$this/$log"), File("$this/tmp/$log"))
+                FileUtils.copyFile(File("$this/$log"), File("$this/tmp/$log"))
             }
         }
     }
@@ -63,19 +58,24 @@ class MainActivity : Activity(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         v?.apply {
-//            val path = getExternalFilesDir("zap")?.absolutePath
             when (tag as Int) {
-                0 -> createCrash()
-                1 -> {
-                    ZapFileUtils.packLogFiles(this@MainActivity)
-                }
-                2 -> ZapFileUtils.deleteFile(getExternalFilesDir("zap")?.absolutePath + "/tmp")
+                0 -> createRuntimeExceptionCrash()
+                1 -> createException()
+                2 -> FileUtils.packLogFiles(this@MainActivity)
+                3 -> FileUtils.deleteFile(getExternalFilesDir("zap")?.absolutePath + "/tmp")
+                4 -> Zap.d("DEBUG级别日志测试")
+                5 -> Zap.i("INFO级别日志测试")
+                6 -> Zap.e("ERROR级别日志测试")
             }
         }
     }
 
-    private fun createCrash() {
-        throw RuntimeException("test crash")
+    private fun createRuntimeExceptionCrash() {
+        throw RuntimeException("test runtime exception crash")
+    }
+
+    private fun createException() {
+        throw Exception("test exception crash")
     }
 
 }
