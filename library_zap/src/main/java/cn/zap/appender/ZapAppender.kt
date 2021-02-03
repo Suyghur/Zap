@@ -1,8 +1,8 @@
-package cn.flyfun.zap.appender
+package cn.zap.appender
 
 import android.util.Log
-import cn.flyfun.zap.Level
-import cn.flyfun.zap.interceptor.IInterceptor
+import cn.zap.Level
+import cn.zap.interceptor.IInterceptor
 
 /**
  * @author #Suyghur,

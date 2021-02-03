@@ -1,6 +1,6 @@
-package cn.flyfun.zap.logger
+package cn.zap.logger
 
-import cn.flyfun.zap.appender.IAppender
+import cn.zap.appender.IAppender
 
 /**
  * @author #Suyghur,

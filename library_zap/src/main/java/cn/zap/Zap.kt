@@ -1,15 +1,15 @@
-package cn.flyfun.zap
+package cn.zap
 
 import android.app.Application
 import android.os.Process
-import cn.flyfun.zap.appender.FileAppender
-import cn.flyfun.zap.appender.ZapAppender
-import cn.flyfun.zap.formatter.DateFileFormatter
-import cn.flyfun.zap.interceptor.IInterceptor
-import cn.flyfun.zap.logger.AppenderLogger
-import cn.flyfun.zap.logger.ILogger
-import cn.flyfun.zap.logger.ZapLogger
-import cn.flyfun.zap.toolkit.FileUtils
+import cn.zap.appender.FileAppender
+import cn.zap.appender.ZapAppender
+import cn.zap.formatter.DateFileFormatter
+import cn.zap.interceptor.IInterceptor
+import cn.zap.logger.AppenderLogger
+import cn.zap.logger.ILogger
+import cn.zap.logger.ZapLogger
+import cn.zap.toolkit.FileUtils
 import java.io.File
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -30,7 +30,7 @@ object Zap {
     private const val DEFAULT_BUFFER_SIZE = 1024 * 400
     private const val DEFAULT_PAST_TIME = -3
 
-    private const val TAG = "flyfun_zap"
+    private const val TAG = "zap_log"
 
 
     @JvmStatic
@@ -141,6 +141,14 @@ object Zap {
     }
 
 
+    /**
+     * 默认的初始化方法
+     *
+     * @param application   上下文对象
+     * @param past  保存时间（天）
+     * @param debug debug模式
+     * @return
+     */
     @JvmStatic
     @JvmOverloads
     fun default(application: Application, past: Int = DEFAULT_PAST_TIME, debug: Boolean = false): Boolean {
@@ -161,7 +169,7 @@ object Zap {
         val zapFolder = FileUtils.getLogDir(application)
         val bufferPath = zapFolder.absolutePath + File.separator + ".cache"
         val time = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-        val logPath = zapFolder.absolutePath + File.separator + time + ".txt"
+        val logPath = zapFolder.absolutePath + File.separator + time + ".log"
         val fileAppender = FileAppender.Builder(application)
                 .setLogFilePath(logPath)
                 .setLevel(Level.DEBUG)

@@ -1,8 +1,8 @@
-package cn.flyfun.zap.toolkit
+package cn.zap.toolkit
 
 import android.content.Context
 import android.text.TextUtils
-import cn.flyfun.zap.Zap
+import cn.zap.Zap
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -19,7 +19,7 @@ object FileUtils {
         val logs = mutableListOf<String>()
         fileTree.maxDepth(1)
                 .filter { it.isFile }
-                .filter { it.extension == "txt" }
+                .filter { it.extension == "log" }
                 .forEach {
                     logs.add(it.name)
                 }
@@ -137,7 +137,7 @@ object FileUtils {
         val fileTree = File(path).walk()
         fileTree.maxDepth(1)
                 .filter { it.isFile }
-                .filter { it.extension == "txt" }
+                .filter { it.extension == "log" }
                 .forEach {
                     if (it.name == "$time.txt") {
                         Zap.d("delete log file : ${it.name}")

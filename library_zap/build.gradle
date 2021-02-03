@@ -33,17 +33,16 @@ android {
     externalNativeBuild {
         cmake {
             path 'CMakeLists.txt'
-//            version "3.10.2"
+            version "3.10.2"
         }
     }
 
     compileOptions {
-        kotlinOptions.freeCompilerArgs += ['-module-name', "cn.flyfun.zap"]
+        kotlinOptions.freeCompilerArgs += ['-module-name', "cn.zap"]
     }
 }
 
 dependencies {
-//    compileOnly files('libs/flyfun_support_1.0.2.jar')
 }
 
 apply from: 'buildJar.gradle'

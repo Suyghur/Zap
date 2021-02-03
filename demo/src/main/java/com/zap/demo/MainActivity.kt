@@ -1,4 +1,4 @@
-package com.flyfun.zap
+package com.zap.demo
 
 import android.app.Activity
 import android.os.Bundle
@@ -6,8 +6,8 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
-import cn.flyfun.zap.toolkit.FileUtils
-import cn.flyfun.zap.Zap
+import cn.zap.toolkit.FileUtils
+import cn.zap.Zap
 import java.io.File
 import java.util.*
 
@@ -46,8 +46,8 @@ class MainActivity : Activity(), View.OnClickListener {
         setContentView(scrollView)
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
+    override fun onPause() {
+        super.onPause()
         Zap.flush()
     }
 

@@ -1,7 +1,7 @@
-package cn.flyfun.zap.formatter
+package cn.zap.formatter
 
 import android.text.TextUtils
-import cn.flyfun.zap.Level
+import cn.zap.Level
 import java.text.SimpleDateFormat
 import java.util.*
 

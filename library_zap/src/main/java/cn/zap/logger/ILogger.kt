@@ -1,4 +1,4 @@
-package cn.flyfun.zap.logger
+package cn.zap.logger
 
 /**
  * @author #Suyghur,

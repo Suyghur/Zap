@@ -127,7 +127,7 @@
 
 -keep class **JNI* {*;}
 
--keep class cn.flyfun.zap.Zap{*;}
--keep class cn.flyfun.zap.ZapBuffer{*;}
--keep class cn.flyfun.zap.toolkit.FileUtils{public <fields>; public <methods>;}
+-keep class cn.zap.Zap{*;}
+-keep class cn.zap.ZapBuffer{*;}
+-keep class cn.zap.toolkit.FileUtils{public <fields>; public <methods>;}
 

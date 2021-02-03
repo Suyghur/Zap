@@ -10,7 +10,7 @@
 
 #include "include/zap_buffer.h"
 
-static const char *const kClassDocScanner = "cn/flyfun/zap/ZapBuffer";
+static const char *const kClassDocScanner = "cn/zap/ZapBuffer";
 
 static char *openMMap(int buffer_fd, size_t buffer_size);
 

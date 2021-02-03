@@ -1,9 +1,6 @@
-package cn.flyfun.zap
+package cn.zap
 
 import android.util.Log
-import java.io.File
-import java.text.SimpleDateFormat
-import java.util.*
 
 /**
  * @author #Suyghur,

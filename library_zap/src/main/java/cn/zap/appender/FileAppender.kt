@@ -1,12 +1,12 @@
-package cn.flyfun.zap.appender
+package cn.zap.appender
 
 import android.content.Context
 import android.os.Environment
 import android.text.TextUtils
-import cn.flyfun.zap.Level
-import cn.flyfun.zap.ZapBuffer
-import cn.flyfun.zap.formatter.IFormatter
-import cn.flyfun.zap.interceptor.IInterceptor
+import cn.zap.Level
+import cn.zap.ZapBuffer
+import cn.zap.formatter.IFormatter
+import cn.zap.interceptor.IInterceptor
 import java.io.File
 
 /**
@@ -29,7 +29,7 @@ class FileAppender(builder: Builder) : AbsAppender() {
     }
 
     override fun doAppend(level: Int, tag: String, msg: String) {
-        logBuffer.write(formatter.format(level, tag, "$msg/&/"))
+        logBuffer.write(formatter.format(level, tag, msg))
     }
 
     override fun flush() {

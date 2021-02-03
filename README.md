@@ -13,6 +13,36 @@
 如果在 flush 之前用户强杀了进程，那么内存里的内容会因此而丢失。
 日志实时写入文件可以保证日志的完整性，但是写文件是 IO 操作，涉及到用户态与内核态的切换，相比较直接写内存会更耗时，UI 线程中频繁的写文件会造成卡顿，影响用户体验。
 
+## 使用
+
+### 在Application中初始化
+
+sdk提供默认的初始化方法Zap.default()，自定义初始化方法请参考Zap.kt#default()实现
+
+```kotlin
+	/**
+	 * 默认的初始化方法
+	 *
+	 * @param application   上下文对象
+	 * @param past  保存时间（天）
+	 * @param debug debug模式
+	 * @return
+	 */
+	@JvmStatic
+	@JvmOverloads
+	fun default(application: Application, past: Int = DEFAULT_PAST_TIME, debug: Boolean = false): Boolean
+```
+
+### 打印日志
+
+和android.util.Log使用方法一致，默认提供DEBUG、INFO、ERROR三种级别日志，更详细的使用方法请参考demo
+
+```kotlin
+Zap.d("DEBUG级别日志测试")
+Zap.i("INFO级别日志测试")
+Zap.e("ERROR级别日志测试")
+```
+
 ## 参考
 
 - [Tencent/mars](https://github.com/Tencent/mars)

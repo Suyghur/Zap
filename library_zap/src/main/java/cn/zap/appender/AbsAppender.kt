@@ -1,8 +1,8 @@
-package cn.flyfun.zap.appender
+package cn.zap.appender
 
-import cn.flyfun.zap.interceptor.IInterceptor
-import cn.flyfun.zap.interceptor.LevelInterceptor
-import cn.flyfun.zap.ZapData
+import cn.zap.interceptor.IInterceptor
+import cn.zap.interceptor.LevelInterceptor
+import cn.zap.ZapData
 
 /**
  * @author #Suyghur,

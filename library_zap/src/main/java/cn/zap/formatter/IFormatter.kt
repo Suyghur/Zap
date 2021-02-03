@@ -1,4 +1,4 @@
-package cn.flyfun.zap.formatter
+package cn.zap.formatter
 
 /**
  * @author #Suyghur,

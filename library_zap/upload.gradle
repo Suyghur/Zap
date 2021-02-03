@@ -1,7 +1,7 @@
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-def GROUP_ID = 'cn.flyfun.zap'
+def GROUP_ID = 'cn.zap'
 def ARTIFACT_ID = 'zap-ktx'
 
 def siteUrl = 'https://github.com/Suyghur/Zap' // 项目的主页
