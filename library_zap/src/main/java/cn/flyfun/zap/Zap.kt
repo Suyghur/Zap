@@ -143,7 +143,7 @@ object Zap {
 
     @JvmStatic
     @JvmOverloads
-    fun default(application: Application, past: Int = DEFAULT_PAST_TIME, debug: Boolean = false) {
+    fun default(application: Application, past: Int = DEFAULT_PAST_TIME, debug: Boolean = false): Boolean {
         val wrapInterceptor = object : IInterceptor {
             override fun intercept(data: ZapData): Boolean {
                 return true
@@ -177,8 +177,7 @@ object Zap {
                 .addAppender(logAppender)
                 .addAppender(fileAppender)
                 .create()
-
-//        callback.onResult(0, "zap framework init success")
+        return true
     }
 
 
