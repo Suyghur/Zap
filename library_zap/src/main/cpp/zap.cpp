@@ -10,8 +10,6 @@
 
 #include "include/zap_buffer.h"
 
-static const char *const kClassDocScanner = "cn/zap/ZapBuffer";
-
 static char *openMMap(int buffer_fd, size_t buffer_size);
 
 static void writeDirtyLogToFile(int buffer_fd);
@@ -87,7 +85,7 @@ static void writeDirtyLogToFile(int buffer_fd) {
 }
 
 static void writeNative(JNIEnv *env, jobject instance, jlong ptr, jstring _log) {
-    const char *log = env->GetStringUTFChars(_log, 0);
+    const char *log = env->GetStringUTFChars(_log, JNI_FALSE);
     jsize log_len = env->GetStringUTFLength(_log);
     auto *zap_buffer = reinterpret_cast<ZapBuffer *>(ptr);
     // 缓存写不下时异步刷新
@@ -156,13 +154,12 @@ extern "C"
 JNIEXPORT jint JNICALL
 JNI_OnLoad(JavaVM *vm, void *reserved) {
     JNIEnv *env = nullptr;
-    if (vm->GetEnv((void **) &env, JNI_VERSION_1_4) != JNI_OK) {
+    if (vm->GetEnv((void **) &env, JNI_VERSION_1_6) != JNI_OK) {
         return JNI_FALSE;
     }
-    jclass classDocScanner = env->FindClass(kClassDocScanner);
-    if (env->RegisterNatives(classDocScanner, gMethods, sizeof(gMethods) / sizeof(gMethods[0])) <
-        0) {
+    jclass clz = env->FindClass("cn/zap/ZapBuffer");
+    if (env->RegisterNatives(clz, gMethods, sizeof(gMethods) / sizeof(gMethods[0])) < 0) {
         return JNI_FALSE;
     }
-    return JNI_VERSION_1_4;
+    return JNI_VERSION_1_6;
 }

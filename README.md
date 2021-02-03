@@ -38,9 +38,9 @@ sdk提供默认的初始化方法Zap.default()，自定义初始化方法请参�
 和android.util.Log使用方法一致，默认提供DEBUG、INFO、ERROR三种级别日志，更详细的使用方法请参考demo
 
 ```kotlin
-    Zap.d("DEBUG级别日志测试")
-    Zap.i("INFO级别日志测试")
-    Zap.e("ERROR级别日志测试")
+	Zap.d("DEBUG级别日志测试")
+	Zap.i("INFO级别日志测试")
+	Zap.e("ERROR级别日志测试")
 ```
 
 ### 写日志
